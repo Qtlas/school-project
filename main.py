@@ -1,6 +1,7 @@
 import json
 import os
 
+SEARCH_DICT = {"CWE" : "weaknesses", "DATE" : "nvd,created", "CVSS" : "vnd,metrics,cvssV3_1,score"}
 
 def json_to_dict(filename : str) -> dict:
     with open(filename, 'r') as f:
@@ -21,8 +22,14 @@ def load_json_by_range_year(yearA : int, yearB : int) -> dict:
     
     return json_data
 
+def get_by_str_path(str_path : str):
+    pass
+
+def search_by(key : str, value : str):
+    if key not in SEARCH_DICT: return -1
 
 
-print(load_json_by_range_year(2024, 2026)['2024'])
+
+
 
     
