@@ -15,5 +15,40 @@ def nb_cve_per_year(yearA : int, yearB : int):
 
 
 
-def nb_cve_per_year(yearA : int, yearB : int):
+def cwe_repartition(yearA : int, yearB : int, top_n  : int = 10):
     data = load_json_by_range_year(yearA, yearB)
+    f = {}
+    for year in range(yearA, yearB+1):
+        for cve in data[str(year)]:
+            for cwe in search_by(data[str(year)][cve], "CWE"):
+                if cwe in f:
+                    f[cwe] += 1
+                else:
+                    f[cwe] = 1
+ 
+    sorted_items = sorted(f.items(), key=lambda x: x[1], reverse=True)
+
+    labels = []
+    sizes = []
+    others = 0
+
+    for i, (cwe, count) in enumerate(sorted_items):
+        if i < top_n:
+            labels.append(cwe)
+            sizes.append(count)
+        else:
+            others += count
+
+    if others > 0:
+        labels.append("OTHER")
+        sizes.append(others)
+
+    plt.figure()
+    plt.pie(sizes, labels=labels, autopct='%1.1f%%', startangle=100)
+    plt.title(f"CWE repartition ({yearA}–{yearB})")
+    plt.axis('equal')
+    plt.show()
+    
+
+
+cwe_repartition(2024, 2026)

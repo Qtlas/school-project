@@ -32,6 +32,8 @@ def get_by_str_path(obj_dict : dict, str_path : str):
     return val
 
 
-def search_by(year : str, cve : str, key : str):
+def search_by(obj_dict : dict, key : str):
     if key not in SEARCH_DICT: return -1
-    return get_by_str_path(data[str(year)][cve], SEARCH_DICT[key])
+    return get_by_str_path(obj_dict, SEARCH_DICT[key])
+
+
