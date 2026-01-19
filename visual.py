@@ -50,5 +50,5 @@ def cwe_repartition(yearA : int, yearB : int, top_n  : int = 10):
     plt.show()
     
 
-
+nb_cve_per_year(2024, 2026)
 cwe_repartition(2024, 2026)
