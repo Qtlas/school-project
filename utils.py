@@ -1,7 +1,18 @@
 import json
 import os
 import math
+from datetime import datetime
 
+FIELD_OPERATORS = {
+    "CVE": ["==", "!=", ":=", "!:="],           # Chaîne
+    "CWE": ["==", "!=", ":=", "!:="],           # Liste
+    "DATE": ["==", "!=", ">", "<", ">=", "<="], # Date (pas de contient)
+    "SCORE": ["==", "!=", ">", "<", ">=", "<="], # Nombre (pas de contient)
+    "METRIC": ["==", "!=", ":=", "!:="],        # Chaîne
+    "TITLE": ["==", "!=", ":=", "!:="],         # Chaîne
+    "DESC": ["==", "!=", ":=", "!:="],          # Chaîne
+    "VENDOR": ["==", "!=", ":=", "!:="]         # Liste
+}
 
 
 def json_to_dict(filename : str) -> dict:
@@ -11,8 +22,8 @@ def json_to_dict(filename : str) -> dict:
         return json_data
 
 
-def load_json_by_range_year(logicExpression : str) -> dict:
-    if yearA < 2015 or yearB > 2026: return -1
+def load_json_by_range_year(logicTab : list) -> dict:
+    yearA, yearB = 2015, 2026
     
     json_data = dict()
 
@@ -20,7 +31,7 @@ def load_json_by_range_year(logicExpression : str) -> dict:
         json_data[str(year)] = dict()
         for json_cve in os.listdir(f"db/{year}/"):
             temp_data = json_to_dict(f"db/{year}/{json_cve}")
-            if logicExpression is None or is_valid_cve_by_logic_tab(temp_data, expression_to_tab(logicExpression)):
+            if logicTab is None or is_valid_cve_by_logic_tab(temp_data, logicTab):
                 json_data[str(year)][json_cve.split('.')[0]] = temp_data
     
     return json_data
@@ -44,7 +55,6 @@ def expression_to_tab(logicExpression : str) -> list:
     return tab
 
 
-
 def is_valid_cve_by_logic_tab(cve: dict, logicTab: list):
     result = None
     cond = None
@@ -52,49 +62,49 @@ def is_valid_cve_by_logic_tab(cve: dict, logicTab: list):
     
     for expr in logicTab:
         if expr not in ["&&", "||"]:
-            field, op, value = expr[0], expr[1], expr[2].strip('"\'[]').split(',')
-            value = [v.strip() for v in value]
-            field_val = cve[field]
+            field, op, raw_value = expr[0], expr[1], expr[2].strip('"\'')
+            
+            if op in [":=", "!:="]:
+                value = [v.strip() for v in raw_value.strip('[]').split(',')]
+            else:
+                value = raw_value
+            
+            if field in FIELD_OPERATORS and op not in FIELD_OPERATORS[field]:
+                raise ValueError(f"Opérateur '{op}' non autorisé pour le champ '{field}'. "
+                               f"Opérateurs autorisés : {', '.join(FIELD_OPERATORS[field])}")
+            
+            field_val = cve.get(field)
+            if field_val is None or field_val == '':
+                cond = False
+                result = cond if result is None else (result or cond if next_op == "||" else result and cond)
+                next_op = None
+                continue
 
             if op == "==":
-                cond = field_val == value[0] if not isinstance(field_val, list) else value[0] in field_val
+                cond = field_val == value if not isinstance(field_val, list) else value in field_val
             elif op == ":=":
-                if isinstance(field_val, list):
-                    cond = any(v in field_val for v in value)
-                else:
-                    cond = any(v in str(field_val) for v in value)
+                cond = any(v in (field_val if isinstance(field_val, list) else str(field_val)) for v in value)
             elif op == "!=":
-                cond = field_val != value[0] if not isinstance(field_val, list) else value[0] not in field_val
+                cond = field_val != value if not isinstance(field_val, list) else value not in field_val
             elif op == "!:=":
-                if isinstance(field_val, list):
-                    cond = not any(v in field_val for v in value)
+                cond = not any(v in (field_val if isinstance(field_val, list) else str(field_val)) for v in value)
+            elif op in [">", "<", ">=", "<="]:
+                if field == "DATE":
+                    a = datetime.strptime(field_val, "%Y-%m-%d %H:%M:%S")
+                    b = datetime.strptime(value, "%Y-%m-%d")
                 else:
-                    cond = not any(v in str(field_val) for v in value)
-            elif op == ">":
-                cond = float(field_val) > float(value[0])
-            elif op == "<":
-                cond = float(field_val) < float(value[0])
-            elif op == ">=":
-                cond = float(field_val) >= float(value[0])
-            elif op == "<=":
-                cond = float(field_val) <= float(value[0])
+                    a, b = float(field_val), float(value)
+                
+                cond = (a > b if op == ">" else a < b if op == "<" else 
+                       a >= b if op == ">=" else a <= b)
             
-            # Appliquer l'opérateur précédent si existe
-            if result is None:
-                result = cond
-            elif next_op == "||":
-                result = result or cond
-            elif next_op == "&&":
-                result = result and cond
-            
+            result = cond if result is None else (result or cond if next_op == "||" else result and cond)
             next_op = None
-        
         else:
-            # Stocker l'opérateur pour la prochaine condition
             next_op = expr
 
     return result if result is not None else False
 
 
-def extract_date_in_expression(logicExpression : str):
-    pass
+        
+        

@@ -1,8 +1,7 @@
 import matplotlib.pyplot as plt
 from utils import *
 
-def nb_cve_per_year(yearA : int, yearB : int):
-    data = load_json_by_range_year(yearA, yearB, None)
+def nb_cve_per_year(data : dict):
     f = {k : len(data[k]) for k in data}
 
     plt.figure()
@@ -15,11 +14,9 @@ def nb_cve_per_year(yearA : int, yearB : int):
 
 
 
-def cwe_repartition(yearA : int, yearB : int, top_n  : int = 10):
-    data = load_json_by_range_year(yearA, yearB, None)
-
+def cwe_repartition(data : dict, top_n  : int = 10):
     f = {}
-    for year in range(yearA, yearB+1):
+    for year in data:
         for cve in data[str(year)]:
             for cwe in data[str(year)][cve]["CWE"]:
                 if cwe in f:
@@ -49,5 +46,49 @@ def cwe_repartition(yearA : int, yearB : int, top_n  : int = 10):
     plt.title(f"CWE repartition ({yearA}–{yearB})")
     plt.axis('equal')
     plt.show()
-  
-cwe_repartition(2020, 2026)
+
+
+def cvss_score_distrib(data: dict):
+    scores = []
+    for year in data:
+        for cve in data[str(year)]:
+            score = data[str(year)][cve].get("SCORE")
+            if score and score != '':
+                scores.append(float(score))
+    
+    plt.figure(figsize=(12, 6))
+    plt.hist(scores, bins=20, edgecolor='black', alpha=0.7)
+    plt.xlabel("CVSS Score")
+    plt.ylabel("Number of CVEs")
+    plt.title("Score CVSS Distribution")
+    plt.grid(True, alpha=0.3)
+    
+
+    plt.axvline(x=4.0, color='yellow', linestyle='--', label='Medium (4.0)')
+    plt.axvline(x=7.0, color='orange', linestyle='--', label='High (7.0)')
+    plt.axvline(x=9.0, color='red', linestyle='--', label='Critical (9.0)')
+    plt.legend()
+    plt.tight_layout()
+    plt.show()
+
+
+def month_distrib(data: dict):
+    months = {i: 0 for i in range(1, 13)}
+    month_names = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 
+                   'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    
+    dates = [data[year][cve].get("DATE") for year in data for cve in data[year] 
+             if data[year][cve].get("DATE")]
+    
+    for date_str in dates:
+        month = int(date_str.split('-')[1])
+        months[month] += 1
+    
+    plt.figure(figsize=(12, 6))
+    plt.bar(month_names, [months[i] for i in range(1, 13)], color='skyblue', edgecolor='black')
+    plt.xlabel("Month")
+    plt.ylabel("Number of CVEs")
+    plt.title("Distribution des CVE dans l'annees")
+    plt.grid(True, alpha=0.3, axis='y')
+    plt.tight_layout()
+    plt.show()
