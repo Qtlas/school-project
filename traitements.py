@@ -1,8 +1,8 @@
-from main import *
-
+import matplotlib.pyplot as plt
+from utils import *
 
 def nb_cve_per_year(yearA : int, yearB : int):
-    data = load_json_by_range_year(yearA, yearB)
+    data = load_json_by_range_year(yearA, yearB, None)
     f = {k : len(data[k]) for k in data}
 
     plt.figure()
@@ -16,11 +16,12 @@ def nb_cve_per_year(yearA : int, yearB : int):
 
 
 def cwe_repartition(yearA : int, yearB : int, top_n  : int = 10):
-    data = load_json_by_range_year(yearA, yearB)
+    data = load_json_by_range_year(yearA, yearB, None)
+
     f = {}
     for year in range(yearA, yearB+1):
         for cve in data[str(year)]:
-            for cwe in search_by(data[str(year)][cve], "CWE"):
+            for cwe in data[str(year)][cve]["CWE"]:
                 if cwe in f:
                     f[cwe] += 1
                 else:
@@ -48,7 +49,5 @@ def cwe_repartition(yearA : int, yearB : int, top_n  : int = 10):
     plt.title(f"CWE repartition ({yearA}–{yearB})")
     plt.axis('equal')
     plt.show()
-    
-
-nb_cve_per_year(2024, 2026)
-cwe_repartition(2024, 2026)
+  
+cwe_repartition(2020, 2026)
