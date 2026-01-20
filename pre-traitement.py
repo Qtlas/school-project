@@ -6,7 +6,7 @@ SEARCH_DICT = {
     "CVE": ["cve"], 
     "CWE": ["nvd,weaknesses"], 
     "DATE": ["nvd,created"], 
-    "SCORE": ["nvd,metrics,cvssV3_1,score", "nvd,metrics,cvssV2_0,score"],  # Inverser l'ordre : V3 d'abord, sinon V2
+    "SCORE": ["nvd,metrics,cvssV3_1,score", "nvd,metrics,cvssV2_0,score"],  
     "METRIC": ["nvd,metrics,cvssV3_1,vector", "nvd,metrics,cvssV2_0,vector"], 
     "TITLE": ["advisories,title", "mitre,title"], 
     "DESC": ["nvd,description"], 
@@ -22,13 +22,12 @@ def get_by_str_path(obj_dict: dict, path_list: list):
             for key in path[1:]:
                 val = val[key]
             
-            # Retourner seulement si la valeur n'est pas vide/None
-            if val or val == 0:  # Accepter 0 comme valeur valide
+            if val or val == 0: 
                 return val
         except:
-            pass
+            continue
     
-    return ""  # Retourner chaîne vide si rien trouvé
+    return "" 
 
 
 def search_by(obj_dict: dict, key: str):
@@ -49,8 +48,9 @@ for dirName in os.listdir("../opencve-kb/"):
         with open(new_path + "/" + cveName, 'w') as f:
             new_data = {k: search_by(data, k) for k in SEARCH_DICT}
             
-            # Nettoyer la date seulement si elle existe
             if new_data["DATE"]:
                 new_data["DATE"] = new_data["DATE"].split('.')[0].replace('T', ' ').replace('+00:00', '')
+            if len(new_data["PRODUIT"]) > 0:
+                new_data["PRODUIT"] = new_data["PRODUIT"][0]
             
             f.write(json.dumps(new_data))

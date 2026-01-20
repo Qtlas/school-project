@@ -16,7 +16,6 @@ if __name__ == "__main__":
         if data is None:
             exit("error")
 
-        cvss_score_distribution(data)
-        monthly_distribution(data)
+        produit_most_vuln(data, 5)
         break
         

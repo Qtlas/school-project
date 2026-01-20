@@ -7,8 +7,8 @@ def nb_cve_per_year(data : dict):
     plt.figure()
     plt.plot(f.keys(), f.values(), marker='o')
     plt.xlabel("Year")
-    plt.ylabel("Number of CVEs")
-    plt.title("Number of CVEs per Year")
+    plt.ylabel("Number of CVE")
+    plt.title("Number of  per Year")
     plt.grid(True)
     plt.show()
 
@@ -59,8 +59,8 @@ def cvss_score_distrib(data: dict):
     plt.figure(figsize=(12, 6))
     plt.hist(scores, bins=20, edgecolor='black', alpha=0.7)
     plt.xlabel("CVSS Score")
-    plt.ylabel("Number of CVEs")
-    plt.title("Score CVSS Distribution")
+    plt.ylabel("Nuber of CVE")
+    plt.title("Score CVSS distribution")
     plt.grid(True, alpha=0.3)
     
 
@@ -87,8 +87,43 @@ def month_distrib(data: dict):
     plt.figure(figsize=(12, 6))
     plt.bar(month_names, [months[i] for i in range(1, 13)], color='skyblue', edgecolor='black')
     plt.xlabel("Month")
-    plt.ylabel("Number of CVEs")
+    plt.ylabel("Number of CVE")
     plt.title("Distribution des CVE dans l'annees")
     plt.grid(True, alpha=0.3, axis='y')
+    plt.tight_layout()
+    plt.show()
+
+
+def produit_most_vuln(data: dict, top_n: int = 10):
+    produit_count = {}  
+    top_produit = []
+    for year in data:
+        for cve in data[year]:
+            if data[year][cve]['PRODUIT'] != '':
+                if data[year][cve]['PRODUIT'] in produit_count:
+                    produit_count[data[year][cve]['PRODUIT']] += 1
+                else:
+                    produit_count[data[year][cve]['PRODUIT']] = 1
+
+                if len(top_produit) < top_n:
+                    if data[year][cve]['PRODUIT'] not in top_produit:  
+                        top_produit.append(data[year][cve]['PRODUIT'])
+                elif data[year][cve]['PRODUIT'] not in top_produit:
+                    for i in range(len(top_produit)):
+                        if produit_count[data[year][cve]['PRODUIT']] > produit_count[top_produit[i]]:
+                            top_produit.remove(top_produit[i])
+                            top_produit.append(data[year][cve]['PRODUIT'])
+                            
+
+    top_produit.sort(key=lambda p: produit_count[p], reverse=True)
+    counts = [produit_count[p] for p in top_produit]
+
+    plt.figure(figsize=(12, top_n))
+    plt.barh(top_produit, counts, color='steelblue', edgecolor='black')
+    plt.xlabel("Number of CVE", fontweight='bold')
+    plt.ylabel("Vendor", fontweight='bold')
+    plt.title(f"Top {top_n} most vulnerable Pproduit", fontweight='bold')
+    plt.gca().invert_yaxis()
+    plt.grid(True, alpha=0.3, axis='x')
     plt.tight_layout()
     plt.show()

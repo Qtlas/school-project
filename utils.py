@@ -4,14 +4,14 @@ import math
 from datetime import datetime
 
 FIELD_OPERATORS = {
-    "CVE": ["==", "!=", ":=", "!:="],           # Chaîne
+    "CVE": ["==", "!=", ":=", "!:="],           # Chaine
     "CWE": ["==", "!=", ":=", "!:="],           # Liste
-    "DATE": ["==", "!=", ">", "<", ">=", "<="], # Date (pas de contient)
-    "SCORE": ["==", "!=", ">", "<", ">=", "<="], # Nombre (pas de contient)
-    "METRIC": ["==", "!=", ":=", "!:="],        # Chaîne
-    "TITLE": ["==", "!=", ":=", "!:="],         # Chaîne
-    "DESC": ["==", "!=", ":=", "!:="],          # Chaîne
-    "VENDOR": ["==", "!=", ":=", "!:="]         # Liste
+    "DATE": ["==", "!=", ">", "<", ">=", "<="], # Date 
+    "SCORE": ["==", "!=", ">", "<", ">=", "<="], # Nombre 
+    "METRIC": ["==", "!=", ":=", "!:="],        # Chaine
+    "TITLE": ["==", "!=", ":=", "!:="],         # Chaine
+    "DESC": ["==", "!=", ":=", "!:="],          # Chaine
+    "PRODUIT": ["==", "!=", ":=", "!:="]         # CHAINE
 }
 
 
@@ -62,38 +62,38 @@ def is_valid_cve_by_logic_tab(cve: dict, logicTab: list):
     
     for expr in logicTab:
         if expr not in ["&&", "||"]:
-            field, op, raw_value = expr[0], expr[1], expr[2].strip('"\'')
+            mot_cle, op, valueRaw = expr[0], expr[1], expr[2].strip('"\'')
             
             if op in [":=", "!:="]:
-                value = [v.strip() for v in raw_value.strip('[]').split(',')]
+                value = [v.strip() for v in valueRaw.strip('[]').split(',')]
             else:
-                value = raw_value
+                value = valueRaw
             
-            if field in FIELD_OPERATORS and op not in FIELD_OPERATORS[field]:
-                raise ValueError(f"Opérateur '{op}' non autorisé pour le champ '{field}'. "
-                               f"Opérateurs autorisés : {', '.join(FIELD_OPERATORS[field])}")
+            if mot_cle in FIELD_OPERATORS and op not in FIELD_OPERATORS[mot_cle]:
+                raise ValueError(f"Opérateur '{op}' non autorisé pour le champ '{mot_cle}'. "
+                               f"Opérateurs autorisés : {', '.join(FIELD_OPERATORS[mot_cle])}")
             
-            field_val = cve.get(field)
-            if field_val is None or field_val == '':
+            mot_cle_val = cve.get(mot_cle)
+            if mot_cle_val is None or mot_cle_val == '':
                 cond = False
                 result = cond if result is None else (result or cond if next_op == "||" else result and cond)
                 next_op = None
                 continue
 
             if op == "==":
-                cond = field_val == value if not isinstance(field_val, list) else value in field_val
+                cond = mot_cle_val == value if not isinstance(mot_cle_val, list) else value in mot_cle_val
             elif op == ":=":
-                cond = any(v in (field_val if isinstance(field_val, list) else str(field_val)) for v in value)
+                cond = any(v in (mot_cle_val if isinstance(mot_cle_val, list) else str(mot_cle_val)) for v in value)
             elif op == "!=":
-                cond = field_val != value if not isinstance(field_val, list) else value not in field_val
+                cond = mot_cle_val != value if not isinstance(mot_cle_val, list) else value not in mot_cle_val
             elif op == "!:=":
-                cond = not any(v in (field_val if isinstance(field_val, list) else str(field_val)) for v in value)
+                cond = not any(v in (mot_cle_val if isinstance(mot_cle_val, list) else str(mot_cle_val)) for v in value)
             elif op in [">", "<", ">=", "<="]:
-                if field == "DATE":
-                    a = datetime.strptime(field_val, "%Y-%m-%d %H:%M:%S")
+                if mot_cle == "DATE":
+                    a = datetime.strptime(mot_cle_val, "%Y-%m-%d %H:%M:%S")
                     b = datetime.strptime(value, "%Y-%m-%d")
                 else:
-                    a, b = float(field_val), float(value)
+                    a, b = float(mot_cle_val), float(value)
                 
                 cond = (a > b if op == ">" else a < b if op == "<" else 
                        a >= b if op == ">=" else a <= b)
