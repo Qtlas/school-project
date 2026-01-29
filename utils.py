@@ -106,5 +106,18 @@ def is_valid_cve_by_logic_tab(cve: dict, logicTab: list):
     return result if result is not None else False
 
 
-        
+
+def get_score_range(score):
+    if score == 0:
+        return "None"
+    elif score < 4.0:
+        return "Low"
+    elif score < 7.0:
+        return "Medium"
+    elif score < 9.0:
+        return "High"
+    else:
+        return "Critical"
+
+
         
