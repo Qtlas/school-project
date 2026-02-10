@@ -1,0 +1,66 @@
+/* Importation des polices */
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Didot&display=swap');
+
+/* Style CSS */
+body {
+    font-family: 'Montserrat', sans-serif; /* Police pour le contenu */
+    background-color: #FFFFFF; /* Fond */
+    color: #333333; /* Couleur du contenu */
+}
+
+.navbar {
+    background-color: #32CD32; /* Fond de la navbar (vert) */
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+.navbar ul {
+    list-style-type: none;
+    text-align: center;
+}
+
+.navbar ul li {
+    display: inline;
+    margin: 0 40px;
+}
+
+.navbar ul li a {
+    color: #FFFFFF; /* Couleur du texte de la navbar */
+    text-decoration: none;
+    transition: font-weight 0.3s ease, font-size 0.3s ease;
+    font-size: 18px;
+}
+
+.navbar ul li a:hover {
+  font-weight: bold;
+  font-size: 19px;
+}
+
+.post-page {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+
+h2 {
+    font-family: 'Didot', serif; /* Police pour les titres */
+    color: #2E7D32; /* Couleur du titre (vert) */
+}
+
+.post {
+    background-color: #FFFFFF;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    padding: 20px;
+    margin-bottom: 20px;
+}
+
+.post p, .post i {
+    color: #333333; /* Couleur du contenu */
+}
+
+.post a {
+  text-decoration: none;
+  color: #32CD32;
+}
