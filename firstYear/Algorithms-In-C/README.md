@@ -1,8 +1,5 @@
 # Algorithmique en C
 
-Travaux dirigés (TD) et travaux pratiques (TP) du module **Algorithmique**
-en langage C — BUT Réseaux & Télécommunications, 1ère année.
-
 Le module couvre les structures de données fondamentales (piles, files,
 listes chaînées, arbres binaires et arbres binaires de recherche) ainsi que
 leurs algorithmes associés (parcours récursifs et itératifs, insertion,
