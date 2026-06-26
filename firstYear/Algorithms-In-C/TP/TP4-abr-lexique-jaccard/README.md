@@ -1,4 +1,4 @@
-# TP4 — Lexiques sous forme d'arbres binaires de recherche
+# TP4 Lexiques sous forme d'arbres binaires de recherche
 
 Suite du TP3 : le lexique n'est plus représenté par une liste chaînée
 triée mais par un **arbre binaire de recherche (ABR)**, ce qui permet des
@@ -6,11 +6,11 @@ opérations de recherche/insertion/suppression en O(h) au lieu de O(n).
 
 ## Contenu
 
-- **`abr.h`** — Définition du type `T_Arbre` (nœud d'ABR contenant un mot,
+- **`abr.h`**  Définition du type `T_Arbre` (nœud d'ABR contenant un mot,
   son nombre d'occurrences et ses deux fils), de la structure `t_mot`
   (liste chaînée utilisée comme représentation intermédiaire) et de la
   pile d'arbres `t_pile_arbre` utilisée pour les parcours itératifs.
-- **`abr.c`** — Implémentation :
+- **`abr.c`**  Implémentation :
   - `creerNoeud` / `ajouterMot` : insertion récursive dans l'ABR (en
     minuscules), incrémentation du compteur si le mot existe déjà.
   - `retirerMot` : suppression récursive d'un mot (gestion des trois cas :
@@ -31,10 +31,10 @@ opérations de recherche/insertion/suppression en O(h) au lieu de O(n).
     distincts des deux lexiques, en parcourant les deux arbres en
     parallèle grâce à `descenteGauche`/`parcourir`.
   - `detruireArbre` / `detruireListe` : libération de la mémoire.
-- **`main.c`** — Menu interactif permettant de manipuler deux arbres
+- **`main.c`**  Menu interactif permettant de manipuler deux arbres
   (`a1` et `a2`) : affichage, ajout, retrait, test d'équilibre,
   transformation en liste chaînée, calcul de l'indice de Jaccard.
-- **`rapport.pdf`** — Compte-rendu du TP.
+- **`rapport.pdf`**  Compte-rendu du TP.
 
 ## Compilation et exécution
 
@@ -55,17 +55,3 @@ Menu proposé :
 [6] Calculer l'indice de Jaccard entre a1 et a2
 [7] Quitter
 ```
-
-## Notes
-
-Quelques corrections mineures ont été apportées par rapport au fichier
-d'origine pour que le programme compile sans avertissement et ne plante
-pas sur des arbres vides :
-
-- ajout de `#include <stdbool.h>` dans `abr.h` (type `bool` utilisé sans
-  son en-tête) ;
-- ajout d'une déclaration de bloc pour le `case '6'` du menu (déclaration
-  de variable directement après une étiquette `case`) ;
-- gestion du cas d'un arbre vide (`NULL`) dans `transformerArbreRec` et
-  `descenteGauche`, utilisées notamment par le calcul de l'indice de
-  Jaccard.

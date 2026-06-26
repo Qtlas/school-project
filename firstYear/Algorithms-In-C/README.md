@@ -1,5 +1,9 @@
 # Algorithmique en C
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 78beb4782b (Add hashmapInC + add readme for sql-project)
 Le module couvre les structures de données fondamentales (piles, files,
 listes chaînées, arbres binaires et arbres binaires de recherche) ainsi que
 leurs algorithmes associés (parcours récursifs et itératifs, insertion,

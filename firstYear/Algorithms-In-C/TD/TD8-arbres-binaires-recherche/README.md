@@ -1,4 +1,4 @@
-# TD8 — Arbres binaires de recherche (ABR)
+# TD8 Arbres binaires de recherche (ABR)
 
 Travaux dirigés sur les arbres binaires de recherche : insertion,
 recherche, recherche du minimum/maximum et parcours préfixe, avec une
@@ -7,7 +7,7 @@ de l'arbre).
 
 ## Contenu
 
-- **`abr.c`** — Implémentation d'un ABR d'entiers :
+- **`abr.c`** Implémentation d'un ABR d'entiers :
   - `creer_noeud` / `inserer` : création et insertion récursive.
   - `recherche` : recherche récursive d'une clé (Ω(1) au mieux,
     O(h) au pire, où `h` est la hauteur de l'arbre).
@@ -26,9 +26,3 @@ make
 ./abr
 make clean
 ```
-
-## Notes
-
-La fonction `recherche` du fichier original ne renvoyait pas le résultat
-des appels récursifs (`return` manquant). Ce point a été corrigé pour que
-la fonction renvoie effectivement le nœud trouvé (ou `NULL`).
